@@ -41,8 +41,15 @@ function initBoard() {
 function initEvents() {
     $('#btn-size').unbind('click').click( (e) => {
         e.preventDefault();
+        oldSize = size;
         size = prompt('Entez la taille désirée (min : 2)\nAttention! Toute progression sera perdue');
+        if (size === null) {
+            // button 'cancel' was clicked
+            size = oldSize;
+            return;
+        }
         if (size <= 1 || isNaN(size)) {
+            // invalid value, fall back to default
             size = 4;
         }
         initBoard();
@@ -63,19 +70,19 @@ function initEvents() {
         var move; // boolean to know if something moved
         switch(e.which) {
             case 37: // left
-                move = left();
+                move = movement("left");
             break;
 
             case 38: // up
-                move = up();
+                move = movement("up");
             break;
 
             case 39: // right
-                move = right();
+                move = movement("right");
             break;
 
             case 40: // down
-                move = down();
+                move = movement("down");
             break;
 
             default: return;
@@ -115,14 +122,14 @@ function getSize() {
     return size;
 }
 
-function fillCell(col, row, value) {
-    $('#num-'+col+''+row).html(value);
-    $('#num-'+col+''+row).addClass('bg-nums');
+function fillCell(row, col, value) {
+    $('#num-'+row+''+col).html(value);
+    $('#num-'+row+''+col).addClass('bg-nums');
 }
 
-function emptyCell(col, row) {
-    $('#num-'+col+''+row).html("");
-    $('#num-'+col+''+row).removeClass('bg-nums');
+function emptyCell(row, col) {
+    $('#num-'+row+''+col).html("");
+    $('#num-'+row+''+col).removeClass('bg-nums');
 }
 
 function boardIsFull() {
@@ -134,106 +141,69 @@ function boardIsFull() {
             }
         }
     }
-    console.log(counter);
-    console.log(size*size);
     if (size*size == counter) {
         return true;
     }
     return false;
 }
 
-function left() {
-    var toCheck = 0, old, nbMove = 0;
+function movement(move) {
+    var toCheck = 0, oldRow, oldCol, nbMove=0, merged, newValue;
     for (var i = 0; i < size; i++) {
+        merged = false;
         for (var j = 0; j < size; j++) {
-            if ($('#num-'+i+''+j).html() != "")  {
-                var moved = true;
-                old = j;
-                toCheck = 1;
-                while(moved) {
-                    if ($('#num-'+i+''+(j-toCheck)).html() == "") {
-                        fillCell(i, (j-toCheck), $('#num-'+i+''+old).html());
-                        emptyCell(i, old);
-                        old = j-toCheck;
-                        toCheck++;
-                        nbMove++;
-                    } else {
-                        moved = false;
-                    }
-                }
+            switch(move) {
+                case "up":
+                        row = j;
+                        col = i;
+                        rowToCheck = row-1;
+                        colToCheck = col;
+                    break;
+                case "down":
+                        row = size-1-j;
+                        col = size-1-i;
+                        rowToCheck = row+1;
+                        colToCheck = col;
+                    break;
+                case "right":
+                        row = size-1-i;
+                        col = size-1-j;
+                        rowToCheck = row;
+                        colToCheck = col+1;
+                    break;
+                case "left":
+                        row = i;
+                        col = j;
+                        rowToCheck = row;
+                        colToCheck = col-1;
+                    break;
             }
-        }
-    }
-    return nbMove;
-}
-
-function up() {
-    var toCheck = 0, old, nbMove=0;
-    for (var i = 0; i < size; i++) {
-        for (var j = 0; j < size; j++) {
-            if ($('#num-'+j+''+i).html() != "")  {
-                var moved = true;
-                old = j;
-                toCheck = 1;
-                while(moved) {
-                    if ($('#num-'+(j-toCheck)+''+i).html() == "") {
-                        fillCell((j-toCheck), i, $('#num-'+old+''+i).html());
-                        emptyCell(old, i);
-                        old = j-toCheck;
-                        toCheck++;
-                        nbMove++;
+            if ($('#num-'+row+''+col).html() != "")  {
+                oldRow = row;
+                oldCol = col;
+                while(true) {
+                    if ($('#num-'+rowToCheck+''+colToCheck).html() == "") {
+                        newValue = $('#num-'+oldRow+''+oldCol).html();
+                    } else if ($('#num-'+rowToCheck+''+colToCheck).html() == $('#num-'+oldRow+''+oldCol).html() && !merged) {
+                        newValue = Number($('#num-'+rowToCheck+''+colToCheck).html()) + Number($('#num-'+oldRow+''+oldCol).html());
+                        merged = true;
                     } else {
-                        moved = false;
+                        break;
                     }
-                }
-            }
-        }
-    }
-    return nbMove;
-}
-
-function down() {
-    var toCheck = 0, old, nbMove=0;
-    for (var i = size-1; i >= 0; i--) {
-        for (var j = size-1; j >= 0; j--) {
-            if ($('#num-'+j+''+i).html() != "")  {
-                var moved = true;
-                old = j;
-                toCheck = 1;
-                while(moved) {
-                    if ($('#num-'+(j+toCheck)+''+i).html() == "") {
-                        fillCell((j+toCheck), i, $('#num-'+old+''+i).html());
-                        emptyCell(old, i);
-                        old = j+toCheck;
-                        toCheck++;
-                        nbMove++;
-                    } else {
-                        moved = false;
-                    }
-                }
-            }
-        }
-    }
-    return nbMove;
-}
-
-function right() {
-    var toCheck = 0, old, nbMove=0;
-    for (var i = size-1; i >= 0; i--) {
-        for (var j = size-1; j >= 0; j--) {
-            if ($('#num-'+i+''+j).html() != "")  {
-                var moved = true;
-                old = j;
-                toCheck = 1;
-                while(moved) {
-                    if ($('#num-'+i+''+(j+toCheck)).html() == "") {
-                        fillCell(i, (j+toCheck), $('#num-'+i+''+old).html());
-                        emptyCell(i, old);
-                        old = j+toCheck;
-                        toCheck++;
-                        nbMove++;
-                    } else {
-                        moved = false;
+                    fillCell(rowToCheck, colToCheck, newValue);
+                    emptyCell(oldRow, oldCol);
+                    oldRow = rowToCheck;
+                    oldCol = colToCheck;
+                    nbMove++;
+                    switch(move) {
+                        case "up": rowToCheck--;
+                            break;
+                        case "down": rowToCheck++;
+                            break;
+                        case "right": colToCheck++;
+                            break;
+                        case "left": colToCheck--;
+                            break;
                     }
                 }
             }
