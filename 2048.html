@@ -1,15 +1,56 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-<head>
+    <head>
+        <title>2048</title>
+        <link rel="stylesheet" type="text/css" href="2048.css" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC" rel="stylesheet">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+        <script type="text/javascript" src="2048.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    </head>
 
-<title>Conforming XHTML 1.0 Strict Template</title>
+    <body>
 
-</head>
+        <div class="container mt-3">
+            <div class="row">
+                <div class="col">
+                    <!-- padding -->
+                </div>
+                <div class="col-8">
+                    <!-- main col -->
+                    <div class="jumbotron">
+                        <div class="game-container">
+                            <div class="header d-flex">
+                                <div class="d-flex">
+                                    <h1>2048</h1>
+                                    <button id="btn-start" class="btn btn-warning ml-3">Commencer!</button>
+                                </div>
+                                <div class="dropdown pt-3">
+                                    <button class="btn btn-link pr-0" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <img id="elipsis" src="elipsis.svg" alt="...">
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" id="btn-size">Changer la taille</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="board" class="board"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <!--  padding -->
+                </div>
+            </div>
 
-<body>
-
-</body>
+        </div>
+    </div>
+    </body>
 </html>
