@@ -1,9 +1,10 @@
 body {
-    font-family: 'Noto Sans TC', sans-serif !important;
+    font-family: 'Quicksand', sans-serif !important;
 }
 
 h1 {
     font-size:3.5rem !important;
+    font-weight: bold !important;
 }
 
 .jumbotron {
@@ -25,6 +26,10 @@ h1 {
     margin: 1em;
 }
 
+.board {
+    font-weight: bold !important;
+}
+
 .game-row {
     display: flex;
     width:100%;
@@ -41,6 +46,21 @@ h1 {
     content: "";
     display: block;
     padding-top: 100%;  /* initial ratio of 1:1*/
+}
+
+.game-cell > span {
+    position:  absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+    font-size: 4rem;
+    text-align:center;
+    padding-top:12%;
+}
+
+.bg-nums {
+    background-color: #ffe595;
 }
 
 #elipsis {
