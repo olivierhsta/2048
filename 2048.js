@@ -39,9 +39,12 @@ function initBoard() {
 }
 
 function initEvents() {
-    $('#btn-size').click( (e) => {
+    $('#btn-size').unbind('click').click( (e) => {
         e.preventDefault();
-        size = prompt('Taille désirée?');
+        size = prompt('Entez la taille désirée (min : 2)\nAttention! Toute progression sera perdue');
+        if (size <= 1 || isNaN(size)) {
+            size = 4;
+        }
         initBoard();
     });
 
@@ -53,30 +56,33 @@ function initEvents() {
     });
 
     $(document).unbind('keydown').keydown(function(e) {
-        if (!gameIsStarted) {
+        e.preventDefault();
+        if (!gameIsStarted || boardIsFull()) {
             return;
         }
+        var move; // boolean to know if something moved
         switch(e.which) {
             case 37: // left
-                left();
+                move = left();
             break;
 
             case 38: // up
-                up();
+                move = up();
             break;
 
             case 39: // right
-                right();
+                move = right();
             break;
 
             case 40: // down
-                down();
+                move = down();
             break;
 
-            default: return; // exit this handler for other keys
+            default: return;
         }
-        spanNum();
-    e.preventDefault(); // prevent the default action (scroll / move caret)
+        if (move) {
+            spanNum();
+        }
 });
 }
 
@@ -119,8 +125,25 @@ function emptyCell(col, row) {
     $('#num-'+col+''+row).removeClass('bg-nums');
 }
 
+function boardIsFull() {
+    var counter = 0;
+    for (var i = 0; i < size; i++) {
+        for (var j = 0; j < size; j++) {
+            if ($('#num-'+i+''+j).html() != "")  {
+                counter++;
+            }
+        }
+    }
+    console.log(counter);
+    console.log(size*size);
+    if (size*size == counter) {
+        return true;
+    }
+    return false;
+}
+
 function left() {
-    var toCheck = 0, old;
+    var toCheck = 0, old, nbMove = 0;
     for (var i = 0; i < size; i++) {
         for (var j = 0; j < size; j++) {
             if ($('#num-'+i+''+j).html() != "")  {
@@ -133,6 +156,7 @@ function left() {
                         emptyCell(i, old);
                         old = j-toCheck;
                         toCheck++;
+                        nbMove++;
                     } else {
                         moved = false;
                     }
@@ -140,10 +164,11 @@ function left() {
             }
         }
     }
+    return nbMove;
 }
 
 function up() {
-    var toCheck = 0, old;
+    var toCheck = 0, old, nbMove=0;
     for (var i = 0; i < size; i++) {
         for (var j = 0; j < size; j++) {
             if ($('#num-'+j+''+i).html() != "")  {
@@ -156,6 +181,7 @@ function up() {
                         emptyCell(old, i);
                         old = j-toCheck;
                         toCheck++;
+                        nbMove++;
                     } else {
                         moved = false;
                     }
@@ -163,10 +189,11 @@ function up() {
             }
         }
     }
+    return nbMove;
 }
 
 function down() {
-    var toCheck = 0, old;
+    var toCheck = 0, old, nbMove=0;
     for (var i = size-1; i >= 0; i--) {
         for (var j = size-1; j >= 0; j--) {
             if ($('#num-'+j+''+i).html() != "")  {
@@ -179,6 +206,7 @@ function down() {
                         emptyCell(old, i);
                         old = j+toCheck;
                         toCheck++;
+                        nbMove++;
                     } else {
                         moved = false;
                     }
@@ -186,10 +214,11 @@ function down() {
             }
         }
     }
+    return nbMove;
 }
 
 function right() {
-    var toCheck = 0, old;
+    var toCheck = 0, old, nbMove=0;
     for (var i = size-1; i >= 0; i--) {
         for (var j = size-1; j >= 0; j--) {
             if ($('#num-'+i+''+j).html() != "")  {
@@ -202,6 +231,7 @@ function right() {
                         emptyCell(i, old);
                         old = j+toCheck;
                         toCheck++;
+                        nbMove++;
                     } else {
                         moved = false;
                     }
@@ -209,4 +239,5 @@ function right() {
             }
         }
     }
+    return nbMove;
 }
