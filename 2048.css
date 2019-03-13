@@ -59,9 +59,17 @@ h1 {
     padding-top:12%;
 }
 
-.bg-nums {
-    background-color: #ffe595;
-}
+.bg-2 { background-color: #fff7de; }
+.bg-4 { background-color: #ffe595; }
+.bg-8 { background-color: #ffca26; }
+.bg-16 { background-color: #ff944f; }
+.bg-32 { background-color: #ff7300; }
+.bg-64 { background-color: #ff3630; }
+.bg-128 { background-color: #b4e2ff; }
+.bg-256 { background-color: #70a1bf; }
+.bg-512 { background-color: #50bcff; }
+.bg-1024 { background-color: #009dff; }
+.bg-2048 { background-color: #88f966; }
 
 #elipsis {
     height: 1.5rem;

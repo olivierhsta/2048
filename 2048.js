@@ -1,4 +1,5 @@
 var size = 4;
+var maxValue = 2048;
 var odds2 = 0.9;
 var gameIsStarted = false;
 
@@ -57,12 +58,12 @@ function initEvents() {
 
     // unbind to prevent the function to be triggered multiple times off one click
     // source : https://stackoverflow.com/a/14856235/7507867
-    $('#btn-start').unbind('click').click( (e) => {
+    $('#btn-start').off('click').click((e) => {
         e.preventDefault();
         startGame();
     });
 
-    $(document).unbind('keydown').keydown(function(e) {
+    $(document).off('keydown').keydown((e) => {
         e.preventDefault();
         if (!gameIsStarted || boardIsFull()) {
             return;
@@ -96,8 +97,7 @@ function initEvents() {
 function startGame() {
     for (var i = 0; i < size; i++) {
         for (var j = 0; j < size; j++) {
-            $('#num-'+i+''+j).empty();
-            $('#num-'+i+''+j).removeClass('bg-nums');
+            emptyCell(i,j);
         }
     }
     spanNum();
@@ -124,12 +124,18 @@ function getSize() {
 
 function fillCell(row, col, value) {
     $('#num-'+row+''+col).html(value);
-    $('#num-'+row+''+col).addClass('bg-nums');
+    $('#num-'+row+''+col).addClass('bg-'+value);
+    if (value == maxValue) {
+        gameIsStarted = false;
+    }
 }
 
 function emptyCell(row, col) {
     $('#num-'+row+''+col).html("");
-    $('#num-'+row+''+col).removeClass('bg-nums');
+    for (var i = 2; i <= 32768; i=i*2) {
+        $('#num-'+row+''+col).removeClass('bg-'+i);
+    }
+
 }
 
 function boardIsFull() {
@@ -150,7 +156,7 @@ function boardIsFull() {
 function movement(move) {
     var toCheck = 0, oldRow, oldCol, nbMove=0, merged, newValue;
     for (var i = 0; i < size; i++) {
-        merged = false;
+        merged = [];
         for (var j = 0; j < size; j++) {
             switch(move) {
                 case "up":
@@ -182,12 +188,16 @@ function movement(move) {
                 oldRow = row;
                 oldCol = col;
                 while(true) {
+                    console.log('colToCheck : ' + colToCheck);
+                    console.log(merged);
                     if ($('#num-'+rowToCheck+''+colToCheck).html() == "") {
                         newValue = $('#num-'+oldRow+''+oldCol).html();
-                    } else if ($('#num-'+rowToCheck+''+colToCheck).html() == $('#num-'+oldRow+''+oldCol).html() && !merged) {
+                    } else if ($('#num-'+rowToCheck+''+colToCheck).html() == $('#num-'+oldRow+''+oldCol).html() &&
+                                $.inArray(rowToCheck + '' + colToCheck, merged) == -1) {
                         newValue = Number($('#num-'+rowToCheck+''+colToCheck).html()) + Number($('#num-'+oldRow+''+oldCol).html());
-                        merged = true;
+                        merged.push(rowToCheck + '' + colToCheck);
                     } else {
+                        merged.push(rowToCheck + '' + colToCheck);
                         break;
                     }
                     fillCell(rowToCheck, colToCheck, newValue);
