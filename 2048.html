@@ -18,31 +18,29 @@
 
     <body>
 
-        <div class="container mt-3">
+        <div class="container page mt-3">
             <div class="row">
                 <div class="col">
                     <!-- padding -->
                 </div>
-                <div class="col-8">
+                <div class="col-lg-8 col-sm-12">
                     <!-- main col -->
-                    <div class="jumbotron">
-                        <div class="game-container">
-                            <div class="header d-flex">
-                                <div class="d-flex">
-                                    <h1>2048</h1>
-                                    <button id="btn-start" class="btn btn-warning ml-3">Nouvelle partie</button>
-                                </div>
-                                <div class="dropdown pt-3">
-                                    <button class="btn btn-link pr-0" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img id="elipsis" src="elipsis.svg" alt="...">
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" id="btn-size">Changer la taille</a>
-                                    </div>
+                    <div class="jumbotron game-container">
+                        <div class="header">
+                            <div class="header-left">
+                                <h1>2048</h1>
+                                <button id="btn-start" class="btn btn-warning">Nouvelle partie</button>
+                            </div>
+                            <div class="dropdown pt-3">
+                                <button class="btn btn-link pr-0" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img id="elipsis" src="elipsis.svg" alt="...">
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" id="btn-size">Changer la taille</a>
                                 </div>
                             </div>
-                            <div id="board" class="board"></div>
                         </div>
+                        <div id="board" class="board"></div>
                     </div>
                 </div>
                 <div class="col">
