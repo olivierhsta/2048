@@ -13,7 +13,7 @@ function initBoard() {
 
         var row = document.createElement('div');
         row.classList.add('game-row');
-        row.id = 'row-' + twoDigitsInt(i);
+        row.id = 'row-' + norm(i);
 
         for(let j = 0; j < size; j++){
             var cell = document.createElement('div');
@@ -24,18 +24,17 @@ function initBoard() {
             if (j % size != 0) {
                 cell.classList.add('border-left-0');
             }
-            cell.id = 'cell-' + twoDigitsInt(i) + '' + twoDigitsInt(j);
+            cell.id = 'cell-' + norm(i) + '' + norm(j);
 
             var num = document.createElement('span');
-            num.id = 'num-' + twoDigitsInt(i) + '' + twoDigitsInt(j);
+            num.id = 'num-' + norm(i) + '' + norm(j);
 
             cell.appendChild(num);
             row.appendChild(cell);
         }
 
         document.getElementById('board').appendChild(row);
-        var fontSize = 16 / size;
-        $(".game-cell").css("font-size", fontSize + "em");
+        adjustFontSize();
         initEvents();
     }
 }
@@ -44,7 +43,7 @@ function initEvents() {
     $('#btn-size').off('click').click(e => {
         e.preventDefault();
         oldSize = size;
-        size = prompt('Entez la taille désirée (min : 2)\nAttention! Toute progression sera perdue');
+        size = prompt('Entez la taille désirée (min : 2, max : 99)\nAttention! Toute progression sera perdue');
         if (size === null) {
             // button 'cancel' was clicked
             size = oldSize;
@@ -66,7 +65,7 @@ function initEvents() {
 
     $(document).off('keydown').keydown((e) => {
         e.preventDefault();
-        if (!gameIsStarted || boardIsFull()) {
+        if (!gameIsStarted || gameOver()) {
             return;
         }
         var move; // boolean to know if something moved
@@ -92,7 +91,28 @@ function initEvents() {
         if (move) {
             spanNum();
         }
+    });
+
+    $(window).on('resize', function(e){
+        window.resizeEvt;
+        $(window).resize(function(){
+            clearTimeout(window.resizeEvt);
+            window.resizeEvt = setTimeout(function(){
+                adjustFontSize();
+            }, 250);
+    });
 });
+}
+
+function adjustFontSize() {
+    var fontSize = 16 / size;
+    if (document.body.clientWidth < 1000) {
+        fontSize -= 3 * fontSize / 8;
+    }
+    $(".game-cell").css("font-size", fontSize + "em");
+    if (size > 20) {
+        $(".game-cell").css("border-width", "1px");
+    }
 }
 
 function startGame() {
@@ -109,8 +129,8 @@ function startGame() {
 function spanNum() {
     var found = false;
     while(!found){
-        var col = twoDigitsInt(Math.floor(Math.random() * Math.floor(size)));
-        var row = twoDigitsInt(Math.floor(Math.random() * Math.floor(size)));
+        var col = norm(Math.floor(Math.random() * Math.floor(size)));
+        var row = norm(Math.floor(Math.random() * Math.floor(size)));
         if ($('#num-'+col+''+row).html() == "")  {
             fillCell(col, row, (Math.random() * Math.floor(1)) < odds2 ? "2" : "4");
             found = true;
@@ -123,8 +143,8 @@ function getSize() {
 }
 
 function fillCell(row, col, value) {
-    row = twoDigitsInt(row);
-    col = twoDigitsInt(col);
+    row = norm(row);
+    col = norm(col);
     $('#num-'+row+''+col).html(value);
     $('#num-'+row+''+col).addClass('bg-'+value);
     if (value == maxValue) {
@@ -133,8 +153,8 @@ function fillCell(row, col, value) {
 }
 
 function emptyCell(row, col) {
-    row = twoDigitsInt(row);
-    col = twoDigitsInt(col);
+    row = norm(row);
+    col = norm(col);
     $('#num-'+row+''+col).html("");
     for (var i = 2; i <= 32768; i=i*2) {
         $('#num-'+row+''+col).removeClass('bg-'+i);
@@ -142,19 +162,34 @@ function emptyCell(row, col) {
 
 }
 
-function boardIsFull() {
+function gameOver() {
     var counter = 0;
+    var cell, left, right, up, down;
     for (var i = 0; i < size; i++) {
         for (var j = 0; j < size; j++) {
-            if ($('#num-'+twoDigitsInt(i)+''+twoDigitsInt(j)).html() != "")  {
+            cell = $('#num-'+norm(i)+''+norm(j)).html();
+            left =  $('#num-'+norm(i)+''+norm(j-1)).html();
+            right =  $('#num-'+norm(i)+''+norm(j+1)).html();
+            up =  $('#num-'+norm(i-1)+''+norm(j)).html();
+            down =  $('#num-'+norm(i+1)+''+norm(j)).html();
+            if (cell == left || cell == right || cell == up || cell == down) {
+                // board is full and there is no possible move
+                return 0;
+            }
+            if (cell == maxValue) {
+                // game is won
+                return -1;
+            }
+            if (cell != "")  {
                 counter++;
             }
         }
     }
     if (size*size == counter) {
-        return true;
+        // all cells are filled
+        return 1;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -163,7 +198,7 @@ function boardIsFull() {
  * @param  int n int to normalize
  * @return int   normalized int
  */
-function twoDigitsInt(n){
+function norm(n){
     n = Number(n);
     if (n < 0) {
         return n;
@@ -179,28 +214,28 @@ function movement(move) {
         for (var j = 0; j < size; j++) {
             switch(move) {
                 case "up":
-                        row = twoDigitsInt(j);
-                        col = twoDigitsInt(i);
-                        rowToCheck = twoDigitsInt(Number(row)-1);
-                        colToCheck = twoDigitsInt(col);
+                        row = norm(j);
+                        col = norm(i);
+                        rowToCheck = norm(Number(row)-1);
+                        colToCheck = norm(col);
                     break;
                 case "down":
-                        row = twoDigitsInt(size-1-j);
-                        col = twoDigitsInt(size-1-i);
-                        rowToCheck = twoDigitsInt(Number(row)+1);
-                        colToCheck = twoDigitsInt(col);
+                        row = norm(size-1-j);
+                        col = norm(size-1-i);
+                        rowToCheck = norm(Number(row)+1);
+                        colToCheck = norm(col);
                     break;
                 case "right":
-                        row = twoDigitsInt(size-1-i);
-                        col = twoDigitsInt(size-1-j);
-                        rowToCheck = twoDigitsInt(row);
-                        colToCheck = twoDigitsInt(Number(col)+1);
+                        row = norm(size-1-i);
+                        col = norm(size-1-j);
+                        rowToCheck = norm(row);
+                        colToCheck = norm(Number(col)+1);
                     break;
                 case "left":
-                        row = twoDigitsInt(i);
-                        col = twoDigitsInt(j);
-                        rowToCheck = twoDigitsInt(row);
-                        colToCheck = twoDigitsInt(Number(col)-1);
+                        row = norm(i);
+                        col = norm(j);
+                        rowToCheck = norm(row);
+                        colToCheck = norm(Number(col)-1);
                     break;
             }
             if ($('#num-'+row+''+col).html() != "")  {
@@ -226,15 +261,15 @@ function movement(move) {
                     oldCol = colToCheck;
                     nbMove++;
                     switch(move) {
-                        case "up": rowToCheck = twoDigitsInt(Number(rowToCheck)-1);
+                        case "up": rowToCheck = norm(Number(rowToCheck)-1);
                             break;
                         case "down":
                             console.log(Number(rowToCheck));
-                            rowToCheck = twoDigitsInt(Number(rowToCheck)+1);
+                            rowToCheck = norm(Number(rowToCheck)+1);
                             break;
-                        case "right": colToCheck = twoDigitsInt(Number(colToCheck)+1);
+                        case "right": colToCheck = norm(Number(colToCheck)+1);
                             break;
-                        case "left": colToCheck = twoDigitsInt(Number(colToCheck)-1);
+                        case "left": colToCheck = norm(Number(colToCheck)-1);
                             break;
                     }
                 }
