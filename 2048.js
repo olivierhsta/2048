@@ -13,7 +13,7 @@ function initBoard() {
 
         var row = document.createElement('div');
         row.classList.add('game-row');
-        row.id = 'row-' + i;
+        row.id = 'row-' + twoDigitsInt(i);
 
         for(let j = 0; j < size; j++){
             var cell = document.createElement('div');
@@ -24,10 +24,10 @@ function initBoard() {
             if (j % size != 0) {
                 cell.classList.add('border-left-0');
             }
-            cell.id = 'cell-' + i + '' + j;
+            cell.id = 'cell-' + twoDigitsInt(i) + '' + twoDigitsInt(j);
 
             var num = document.createElement('span');
-            num.id = 'num-' + i + '' + j;
+            num.id = 'num-' + twoDigitsInt(i) + '' + twoDigitsInt(j);
 
             cell.appendChild(num);
             row.appendChild(cell);
@@ -109,9 +109,8 @@ function startGame() {
 function spanNum() {
     var found = false;
     while(!found){
-        var col = Math.floor(Math.random() * Math.floor(size));
-        var row = Math.floor(Math.random() * Math.floor(size));
-
+        var col = twoDigitsInt(Math.floor(Math.random() * Math.floor(size)));
+        var row = twoDigitsInt(Math.floor(Math.random() * Math.floor(size)));
         if ($('#num-'+col+''+row).html() == "")  {
             fillCell(col, row, (Math.random() * Math.floor(1)) < odds2 ? "2" : "4");
             found = true;
@@ -124,6 +123,8 @@ function getSize() {
 }
 
 function fillCell(row, col, value) {
+    row = twoDigitsInt(row);
+    col = twoDigitsInt(col);
     $('#num-'+row+''+col).html(value);
     $('#num-'+row+''+col).addClass('bg-'+value);
     if (value == maxValue) {
@@ -132,6 +133,8 @@ function fillCell(row, col, value) {
 }
 
 function emptyCell(row, col) {
+    row = twoDigitsInt(row);
+    col = twoDigitsInt(col);
     $('#num-'+row+''+col).html("");
     for (var i = 2; i <= 32768; i=i*2) {
         $('#num-'+row+''+col).removeClass('bg-'+i);
@@ -143,7 +146,7 @@ function boardIsFull() {
     var counter = 0;
     for (var i = 0; i < size; i++) {
         for (var j = 0; j < size; j++) {
-            if ($('#num-'+i+''+j).html() != "")  {
+            if ($('#num-'+twoDigitsInt(i)+''+twoDigitsInt(j)).html() != "")  {
                 counter++;
             }
         }
@@ -154,6 +157,21 @@ function boardIsFull() {
     return false;
 }
 
+/**
+ * Normalize the given int to return a two digits numerical string
+ * 0 are appended to single-digits and 3+ digits number only retain the first two elements
+ * @param  int n int to normalize
+ * @return int   normalized int
+ */
+function twoDigitsInt(n){
+    n = Number(n);
+    if (n < 0) {
+        return n;
+    }
+    return (n <= 9 ? ("0"+n).substring(0,2) : (n+"").substring(0,2));
+
+}
+
 function movement(move) {
     var toCheck = 0, oldRow, oldCol, nbMove=0, merged, newValue;
     for (var i = 0; i < size; i++) {
@@ -161,36 +179,36 @@ function movement(move) {
         for (var j = 0; j < size; j++) {
             switch(move) {
                 case "up":
-                        row = j;
-                        col = i;
-                        rowToCheck = row-1;
-                        colToCheck = col;
+                        row = twoDigitsInt(j);
+                        col = twoDigitsInt(i);
+                        rowToCheck = twoDigitsInt(Number(row)-1);
+                        colToCheck = twoDigitsInt(col);
                     break;
                 case "down":
-                        row = size-1-j;
-                        col = size-1-i;
-                        rowToCheck = row+1;
-                        colToCheck = col;
+                        row = twoDigitsInt(size-1-j);
+                        col = twoDigitsInt(size-1-i);
+                        rowToCheck = twoDigitsInt(Number(row)+1);
+                        colToCheck = twoDigitsInt(col);
                     break;
                 case "right":
-                        row = size-1-i;
-                        col = size-1-j;
-                        rowToCheck = row;
-                        colToCheck = col+1;
+                        row = twoDigitsInt(size-1-i);
+                        col = twoDigitsInt(size-1-j);
+                        rowToCheck = twoDigitsInt(row);
+                        colToCheck = twoDigitsInt(Number(col)+1);
                     break;
                 case "left":
-                        row = i;
-                        col = j;
-                        rowToCheck = row;
-                        colToCheck = col-1;
+                        row = twoDigitsInt(i);
+                        col = twoDigitsInt(j);
+                        rowToCheck = twoDigitsInt(row);
+                        colToCheck = twoDigitsInt(Number(col)-1);
                     break;
             }
             if ($('#num-'+row+''+col).html() != "")  {
+                console.log("Moving : " + row + "" + col);
+                console.log("To : " + rowToCheck + "" + colToCheck);
                 oldRow = row;
                 oldCol = col;
                 while(true) {
-                    console.log('colToCheck : ' + colToCheck);
-                    console.log(merged);
                     if ($('#num-'+rowToCheck+''+colToCheck).html() == "") {
                         newValue = $('#num-'+oldRow+''+oldCol).html();
                     } else if ($('#num-'+rowToCheck+''+colToCheck).html() == $('#num-'+oldRow+''+oldCol).html() &&
@@ -199,6 +217,7 @@ function movement(move) {
                         merged.push(rowToCheck + '' + colToCheck);
                     } else {
                         merged.push(rowToCheck + '' + colToCheck);
+                        console.log('wut');
                         break;
                     }
                     fillCell(rowToCheck, colToCheck, newValue);
@@ -207,13 +226,15 @@ function movement(move) {
                     oldCol = colToCheck;
                     nbMove++;
                     switch(move) {
-                        case "up": rowToCheck--;
+                        case "up": rowToCheck = twoDigitsInt(Number(rowToCheck)-1);
                             break;
-                        case "down": rowToCheck++;
+                        case "down":
+                            console.log(Number(rowToCheck));
+                            rowToCheck = twoDigitsInt(Number(rowToCheck)+1);
                             break;
-                        case "right": colToCheck++;
+                        case "right": colToCheck = twoDigitsInt(Number(colToCheck)+1);
                             break;
-                        case "left": colToCheck--;
+                        case "left": colToCheck = twoDigitsInt(Number(colToCheck)-1);
                             break;
                     }
                 }
