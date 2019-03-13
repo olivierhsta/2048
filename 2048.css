@@ -38,6 +38,7 @@ h1 {
 .game-cell{
     border:5px solid rgb(96, 56, 40);
     background-color:rgba(255, 147, 102, 0.25);
+    font-size: 4em;
     position: relative;
     width: 100%;     /* desired width */
 }
@@ -54,7 +55,6 @@ h1 {
 	left: 0;
 	bottom: 0;
 	right: 0;
-    font-size: 4rem;
     text-align:center;
     padding-top:12%;
 }

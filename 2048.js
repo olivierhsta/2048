@@ -9,7 +9,6 @@ $(function(){
 
 function initBoard() {
     $('#board').empty();
-
     for(let i = 0; i < size; i++){
 
         var row = document.createElement('div');
@@ -35,12 +34,14 @@ function initBoard() {
         }
 
         document.getElementById('board').appendChild(row);
+        var fontSize = 16 / size;
+        $(".game-cell").css("font-size", fontSize + "em");
         initEvents();
     }
 }
 
 function initEvents() {
-    $('#btn-size').unbind('click').click( (e) => {
+    $('#btn-size').off('click').click(e => {
         e.preventDefault();
         oldSize = size;
         size = prompt('Entez la taille désirée (min : 2)\nAttention! Toute progression sera perdue');
