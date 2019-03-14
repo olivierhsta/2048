@@ -71,10 +71,16 @@ h1 {
 .bg-32 { background-color: #ff7300; }
 .bg-64 { background-color: #ff3630; }
 .bg-128 { background-color: #b4e2ff; }
-.bg-256 { background-color: #70a1bf; }
-.bg-512 { background-color: #50bcff; }
-.bg-1024 { background-color: #009dff; }
-.bg-2048 { background-color: #88f966; }
+.bg-256 { background-color: #00b3ff; }
+.bg-512 { background-color: #0084d6; }
+.bg-1024 { background-color: #3172ff; }
+.bg-2048 { background-color: #b8ffa3; }
+.bg-4096 { background-color: #88f966; }
+.bg-8192 { background-color: #3b8525; }
+.bg-16384 { background-color: #e5a0f5; }
+.bg-32768 { background-color: #764c80; }
+.bg-65536 { background-color: #fe00ff; }
+.bg-other { background-color: #ffffff; }
 
 #elipsis {
     height: 1.5rem;

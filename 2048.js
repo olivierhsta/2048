@@ -1,5 +1,7 @@
 var size = 4;
-var maxValue = 2048;
+var minValue = 256;
+var maxValue = 65536;
+var winValue = minValue * 1024;
 var odds2 = 0.9;
 var gameIsStarted = false;
 
@@ -34,9 +36,10 @@ function initBoard() {
         }
 
         document.getElementById('board').appendChild(row);
-        adjustFontSize();
-        initEvents();
     }
+    adjustFontSize();
+    adjustBoardBorders();
+    initEvents();
 }
 
 function initEvents() {
@@ -49,7 +52,7 @@ function initEvents() {
             size = oldSize;
             return;
         }
-        if (size <= 1 || isNaN(size)) {
+        if (size <= 1 || size > 99 || isNaN(size)) {
             // invalid value, fall back to default
             size = 4;
         }
@@ -93,23 +96,40 @@ function initEvents() {
         }
     });
 
+    // to make the function to be trigger only after the resize
+    // source : https://stackoverflow.com/a/22479394/7507867
     $(window).on('resize', function(e){
         window.resizeEvt;
         $(window).resize(function(){
             clearTimeout(window.resizeEvt);
             window.resizeEvt = setTimeout(function(){
                 adjustFontSize();
+                adjustBoardBorders();
             }, 250);
     });
 });
 }
 
 function adjustFontSize() {
+    for (var i = 0; i < size; i++) {
+        for (var j = 0; j < size; j++) {
+            adjustIndivFontSize(i,j);
+        }
+    }
+}
+
+function adjustIndivFontSize(row, col) {
     var fontSize = 16 / size;
     if (document.body.clientWidth < 1000) {
         fontSize -= 3 * fontSize / 8;
     }
-    $(".game-cell").css("font-size", fontSize + "em");
+    if ($("#num-"+norm(row)+''+norm(col)).html().length >= 4) {
+        fontSize = 3 * fontSize / 4;
+    }
+    $("#cell-"+norm(row)+norm(col)).css("font-size", fontSize + "em");
+}
+
+function adjustBoardBorders() {
     if (size > 20) {
         $(".game-cell").css("border-width", "1px");
     }
@@ -132,7 +152,7 @@ function spanNum() {
         var col = norm(Math.floor(Math.random() * Math.floor(size)));
         var row = norm(Math.floor(Math.random() * Math.floor(size)));
         if ($('#num-'+col+''+row).html() == "")  {
-            fillCell(col, row, (Math.random() * Math.floor(1)) < odds2 ? "2" : "4");
+            fillCell(col, row, (Math.random() * Math.floor(1)) < odds2 ? minValue : minValue*2);
             found = true;
         }
     }
@@ -146,9 +166,16 @@ function fillCell(row, col, value) {
     row = norm(row);
     col = norm(col);
     $('#num-'+row+''+col).html(value);
-    $('#num-'+row+''+col).addClass('bg-'+value);
-    if (value == maxValue) {
-        gameIsStarted = false;
+    if (value.toString().length >= 4) {
+        $('#num-'+row+''+col).css("padding-top", "20%");
+    }
+    adjustIndivFontSize(row,col);
+
+    value = 2*Number(value) / minValue;
+    if (Number.isInteger(Math.log2(value)) && value <= maxValue) {
+        $('#num-'+row+''+col).addClass('bg-'+value);
+    } else {
+        $('#num-'+row+''+col).addClass('bg-other');
     }
 }
 
@@ -156,12 +183,19 @@ function emptyCell(row, col) {
     row = norm(row);
     col = norm(col);
     $('#num-'+row+''+col).html("");
-    for (var i = 2; i <= 32768; i=i*2) {
+    for (var i = 2; i <= maxValue; i=i*2) {
         $('#num-'+row+''+col).removeClass('bg-'+i);
     }
+    $('#num-'+row+''+col).removeClass('bg-other');
+    adjustIndivFontSize(row,col);
+    $('#num-'+row+''+col).css("padding-top", "12%");
 
 }
 
+/**
+ * [gameOver description]
+ * @return int -1 when game is won, 0 when game is lost, 1 otherwise
+ */
 function gameOver() {
     var counter = 0;
     var cell, left, right, up, down;
@@ -176,7 +210,7 @@ function gameOver() {
                 // board is full and there is no possible move
                 return 0;
             }
-            if (cell == maxValue) {
+            if (cell == winValue) {
                 // game is won
                 return -1;
             }
@@ -239,8 +273,6 @@ function movement(move) {
                     break;
             }
             if ($('#num-'+row+''+col).html() != "")  {
-                console.log("Moving : " + row + "" + col);
-                console.log("To : " + rowToCheck + "" + colToCheck);
                 oldRow = row;
                 oldCol = col;
                 while(true) {
@@ -252,7 +284,6 @@ function movement(move) {
                         merged.push(rowToCheck + '' + colToCheck);
                     } else {
                         merged.push(rowToCheck + '' + colToCheck);
-                        console.log('wut');
                         break;
                     }
                     fillCell(rowToCheck, colToCheck, newValue);
@@ -264,7 +295,6 @@ function movement(move) {
                         case "up": rowToCheck = norm(Number(rowToCheck)-1);
                             break;
                         case "down":
-                            console.log(Number(rowToCheck));
                             rowToCheck = norm(Number(rowToCheck)+1);
                             break;
                         case "right": colToCheck = norm(Number(colToCheck)+1);
