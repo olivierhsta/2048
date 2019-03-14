@@ -14,7 +14,8 @@ h1 {
 .game-container {
     width:83%;
     margin-left:9%;
-    margin-top:5%;
+    margin-top:0;
+    padding-bottom:2rem !important;
 }
 
 .header {
@@ -72,8 +73,8 @@ h1 {
 .bg-64 { background-color: #ff3630; }
 .bg-128 { background-color: #b4e2ff; }
 .bg-256 { background-color: #00b3ff; }
-.bg-512 { background-color: #0084d6; }
-.bg-1024 { background-color: #3172ff; }
+.bg-512 { background-color: #59849f; }
+.bg-1024 { background-color: #155efd; }
 .bg-2048 { background-color: #b8ffa3; }
 .bg-4096 { background-color: #88f966; }
 .bg-8192 { background-color: #3b8525; }

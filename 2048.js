@@ -1,5 +1,5 @@
 var size = 4;
-var minValue = 256;
+var minValue = 2;
 var maxValue = 65536;
 var winValue = minValue * 1024;
 var odds2 = 0.9;
@@ -19,6 +19,12 @@ function initBoard() {
         row.id = 'row-' + norm(i);
 
         for(let j = 0; j < size; j++){
+
+            if ($.inArray(norm(i) + norm(j), emptyCells) < 0) {
+                emptyCells.push(norm(i) + norm(j));
+            }
+            console.log(emptyCells);
+
             var cell = document.createElement('div');
             cell.classList.add('game-cell');
             if (i != size - 1) {
@@ -34,13 +40,10 @@ function initBoard() {
 
             cell.appendChild(num);
             row.appendChild(cell);
-
-            emptyCells.push(norm(i) + norm(j));
         }
 
         document.getElementById('board').appendChild(row);
     }
-    console.log(emptyCells);
     adjustFontSize();
     adjustBoardBorders();
     initEvents();
@@ -78,7 +81,7 @@ function initEvents() {
 
         var move; // boolean to know if something has been moved
         move = movement(e.which);
-        if (move) {
+        if (move > 0) {
             spanNum();
         }
     });
@@ -115,8 +118,9 @@ function spanNum() {
     var cell = emptyCells[Math.floor(Math.random()*emptyCells.length)];
     var row = cell.substring(0,2);
     var col = cell.substring(2,4);
-    if ($('#num-'+col+''+row).html() == "")  {
-        fillCell(col, row, (Math.random() * Math.floor(1)) < odds2 ? minValue : minValue*2);
+    console.log("Trying to span num on cell : " + row + col);
+    if ($('#num-'+row+''+col).html() == "")  {
+        fillCell(row, col, (Math.random() * Math.floor(1)) < odds2 ? minValue : minValue*2);
         found = true;
     }
 }
@@ -125,8 +129,13 @@ function fillCell(row, col, value) {
     emptyCell(row,col);
     row = norm(row);
     col = norm(col);
-    $('#num-'+row+''+col).html(value);
-    emptyCells.splice(emptyCells.indexOf(row+''+col), 1);
+    console.log(row + col);
+    console.log(value);
+    $('#num-'+row+''+col).html(value)
+    var toRemove = emptyCells.indexOf(row+''+col);
+    if (toRemove >= 0) {
+        emptyCells.splice(toRemove, 1);
+    }
     adjustIndivFontSize(row,col);
     value = 2*Number(value) / minValue;
     if (Number.isInteger(Math.log2(value)) && value <= maxValue) {
@@ -140,7 +149,9 @@ function emptyCell(row, col) {
     row = norm(row);
     col = norm(col);
     $('#num-'+row+''+col).html("");
-    emptyCells.push(row+''+col);
+    if ($.inArray(row+''+col, emptyCells) < 0) {
+        emptyCells.push(row+''+col);
+    }
     for (var i = 2; i <= maxValue; i=i*2) {
         $('#num-'+row+''+col).removeClass('bg-'+i);
     }
