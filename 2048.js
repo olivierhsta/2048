@@ -4,6 +4,7 @@ var maxValue = 65536;
 var winValue = minValue * 1024;
 var odds2 = 0.9;
 var gameIsStarted = false;
+var emptyCells = []
 
 $(function(){
     initBoard();
@@ -33,10 +34,13 @@ function initBoard() {
 
             cell.appendChild(num);
             row.appendChild(cell);
+
+            emptyCells.push(norm(i) + norm(j));
         }
 
         document.getElementById('board').appendChild(row);
     }
+    console.log(emptyCells);
     adjustFontSize();
     adjustBoardBorders();
     initEvents();
@@ -59,7 +63,7 @@ function initEvents() {
         initBoard();
     });
 
-    // unbind to prevent the function to be triggered multiple times off one click
+    // unbind to prevent the function to be triggered multiple times of one click
     // source : https://stackoverflow.com/a/14856235/7507867
     $('#btn-start').off('click').click((e) => {
         e.preventDefault();
@@ -71,26 +75,9 @@ function initEvents() {
         if (!gameIsStarted || gameOver()) {
             return;
         }
-        var move; // boolean to know if something moved
-        switch(e.which) {
-            case 37: // left
-                move = movement("left");
-            break;
 
-            case 38: // up
-                move = movement("up");
-            break;
-
-            case 39: // right
-                move = movement("right");
-            break;
-
-            case 40: // down
-                move = movement("down");
-            break;
-
-            default: return;
-        }
+        var move; // boolean to know if something has been moved
+        move = movement(e.which);
         if (move) {
             spanNum();
         }
@@ -106,33 +93,8 @@ function initEvents() {
                 adjustFontSize();
                 adjustBoardBorders();
             }, 250);
+        });
     });
-});
-}
-
-function adjustFontSize() {
-    for (var i = 0; i < size; i++) {
-        for (var j = 0; j < size; j++) {
-            adjustIndivFontSize(i,j);
-        }
-    }
-}
-
-function adjustIndivFontSize(row, col) {
-    var fontSize = 16 / size;
-    if (document.body.clientWidth < 1000) {
-        fontSize -= 3 * fontSize / 8;
-    }
-    if ($("#num-"+norm(row)+''+norm(col)).html().length >= 4) {
-        fontSize = 3 * fontSize / 4;
-    }
-    $("#cell-"+norm(row)+norm(col)).css("font-size", fontSize + "em");
-}
-
-function adjustBoardBorders() {
-    if (size > 20) {
-        $(".game-cell").css("border-width", "1px");
-    }
 }
 
 function startGame() {
@@ -146,31 +108,26 @@ function startGame() {
     gameIsStarted = true;
 }
 
+/**
+ * Randomly span a number on the board
+ */
 function spanNum() {
-    var found = false;
-    while(!found){
-        var col = norm(Math.floor(Math.random() * Math.floor(size)));
-        var row = norm(Math.floor(Math.random() * Math.floor(size)));
-        if ($('#num-'+col+''+row).html() == "")  {
-            fillCell(col, row, (Math.random() * Math.floor(1)) < odds2 ? minValue : minValue*2);
-            found = true;
-        }
+    var cell = emptyCells[Math.floor(Math.random()*emptyCells.length)];
+    var row = cell.substring(0,2);
+    var col = cell.substring(2,4);
+    if ($('#num-'+col+''+row).html() == "")  {
+        fillCell(col, row, (Math.random() * Math.floor(1)) < odds2 ? minValue : minValue*2);
+        found = true;
     }
-}
-
-function getSize() {
-    return size;
 }
 
 function fillCell(row, col, value) {
+    emptyCell(row,col);
     row = norm(row);
     col = norm(col);
     $('#num-'+row+''+col).html(value);
-    if (value.toString().length >= 4) {
-        $('#num-'+row+''+col).css("padding-top", "20%");
-    }
+    emptyCells.splice(emptyCells.indexOf(row+''+col), 1);
     adjustIndivFontSize(row,col);
-
     value = 2*Number(value) / minValue;
     if (Number.isInteger(Math.log2(value)) && value <= maxValue) {
         $('#num-'+row+''+col).addClass('bg-'+value);
@@ -183,13 +140,13 @@ function emptyCell(row, col) {
     row = norm(row);
     col = norm(col);
     $('#num-'+row+''+col).html("");
+    emptyCells.push(row+''+col);
     for (var i = 2; i <= maxValue; i=i*2) {
         $('#num-'+row+''+col).removeClass('bg-'+i);
     }
     $('#num-'+row+''+col).removeClass('bg-other');
     adjustIndivFontSize(row,col);
     $('#num-'+row+''+col).css("padding-top", "12%");
-
 }
 
 /**
@@ -227,6 +184,52 @@ function gameOver() {
 }
 
 /**
+ * Adjust the font-size of all cells
+ */
+function adjustFontSize() {
+    for (var i = 0; i < size; i++) {
+        for (var j = 0; j < size; j++) {
+            adjustIndivFontSize(i,j);
+        }
+    }
+}
+
+/**
+ * Adjut the font size of the given cell.  It also adjust the padding so the number stays centered
+ * Takes into account the window's size and the length of the number
+ * @param  int row Row of the cell (normalized or not)
+ * @param  int col Column of the cell (normalized or not)
+ */
+function adjustIndivFontSize(row, col) {
+    var fontSize = 16 / size;
+    if (document.body.clientWidth < 1000) {
+        fontSize -= 3 * fontSize / 8;
+    }
+    var numLength = $("#num-"+norm(row)+''+norm(col)).html().length;
+    if (numLength == 4) {
+        fontSize = 3 * fontSize / 4; // 75%
+        $("#num-"+norm(row)+norm(col)).css("padding-top","20%");
+    } else if (numLength == 5) {
+        fontSize = 27 * fontSize / 40; // 90% of 75%
+        $("#num-"+norm(row)+norm(col)).css("padding-top","24%");
+    }
+    $("#cell-"+norm(row)+norm(col)).css("font-size", fontSize + "em");
+}
+
+/**
+ * Make the borders smaller if the size is large (greater than 20)
+ */
+function adjustBoardBorders() {
+    if (size > 20) {
+        $(".game-cell").css("border-width", "1px");
+    }
+}
+
+function getSize() {
+    return size;
+}
+
+/**
  * Normalize the given int to return a two digits numerical string
  * 0 are appended to single-digits and 3+ digits number only retain the first two elements
  * @param  int n int to normalize
@@ -242,30 +245,32 @@ function norm(n){
 }
 
 function movement(move) {
+    if (move !== 37 && move !== 38 && move !== 39 && move !== 40) return;
+
     var toCheck = 0, oldRow, oldCol, nbMove=0, merged, newValue;
     for (var i = 0; i < size; i++) {
         merged = [];
         for (var j = 0; j < size; j++) {
             switch(move) {
-                case "up":
+                case 38: // up
                         row = norm(j);
                         col = norm(i);
                         rowToCheck = norm(Number(row)-1);
                         colToCheck = norm(col);
                     break;
-                case "down":
+                case 40: // down
                         row = norm(size-1-j);
                         col = norm(size-1-i);
                         rowToCheck = norm(Number(row)+1);
                         colToCheck = norm(col);
                     break;
-                case "right":
+                case 39: // right
                         row = norm(size-1-i);
                         col = norm(size-1-j);
                         rowToCheck = norm(row);
                         colToCheck = norm(Number(col)+1);
                     break;
-                case "left":
+                case 37: // left
                         row = norm(i);
                         col = norm(j);
                         rowToCheck = norm(row);
@@ -292,14 +297,14 @@ function movement(move) {
                     oldCol = colToCheck;
                     nbMove++;
                     switch(move) {
-                        case "up": rowToCheck = norm(Number(rowToCheck)-1);
+                        case 38: rowToCheck = norm(Number(rowToCheck)-1);
                             break;
-                        case "down":
+                        case 40:
                             rowToCheck = norm(Number(rowToCheck)+1);
                             break;
-                        case "right": colToCheck = norm(Number(colToCheck)+1);
+                        case 39: colToCheck = norm(Number(colToCheck)+1);
                             break;
-                        case "left": colToCheck = norm(Number(colToCheck)-1);
+                        case 37: colToCheck = norm(Number(colToCheck)-1);
                             break;
                     }
                 }
