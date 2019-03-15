@@ -5,17 +5,18 @@ body {
 h1 {
     font-size:3.5em !important;
     font-weight: bold !important;
-}
-
-.jumbotron {
-    padding-top:5% !important;
+    margin-top:0;
+    margin-bottom:0;
+    margin-right: 5%;
 }
 
 .game-container {
-    width:83%;
-    margin-left:9%;
+    margin-left:30%;
+    margin-right:30%;
     margin-top:0;
-    padding-bottom:2rem !important;
+    padding:2rem;
+    background-color:#e9ecef;
+    border-radius: 0.3rem;
 }
 
 .header {
@@ -26,10 +27,54 @@ h1 {
 
 .header-left {
     display: flex;
+    width:75%;
 }
 
-#btn-start {
-    margin: 1em;
+
+button {
+    text-align: center;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    height:3em;
+}
+
+.btn-warning {
+    color: #212529;
+    margin-top:1.3em;
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-warning:hover {
+  background-color: #b88a00 !important;
+  border-color: #b88a00;
+}
+
+#btn-resize {
+    padding-right:0.5em;
+    padding-left: 0;
+    padding-bottom: 0.7em;
+    background-color: #e9ecef;
+}
+
+#resize-icon {
+    height: 1.5rem;
+}
+
+.header-right {
+    display: flex;
+    margin-top:1.2em;
+}
+
+.score {
+    margin-top: 0.6em;
+    margin-right:2em;
+}
+
+#score {
+    margin-bottom:0 !important;
+    margin-top:0 !important;
 }
 
 .board {
@@ -62,7 +107,7 @@ h1 {
 	bottom: 0;
 	right: 0;
     text-align:center;
-    padding-top:12%;
+    padding-top:17%;
 }
 
 .bg-2 { background-color: #fff7de; }
@@ -83,32 +128,71 @@ h1 {
 .bg-65536 { background-color: #fe00ff; }
 .bg-other { background-color: #ffffff; }
 
-#elipsis {
-    height: 1.5rem;
+.border-bottom-0 {
+    border-bottom: 0 !important;
 }
 
-@media all and (max-width: 750px) {
+.border-left-0 {
+    border-left: 0 !important;
+}
+
+.border-right-0 {
+    border-right: 0 !important;
+}
+
+.border-top-0 {
+    border-top: 0 !important;
+}
+
+@media all and (max-width: 1340px) {
     h1 {
         margin-top:0.3em !important;
         font-size :2.5em !important;
     }
 
+    .game-container {
+        padding-top:0.2em;
+    }
+}
+
+@media all and (max-width: 950px) {
   .game-container {
-      margin:0;
-      width:100%;
+      padding-top:0;
+      margin-left: 20%;
+      margin-right: 20%;
   }
 
-  .page {
-      padding:0;
+  .score {
+      margin-right:1em;
   }
 }
 
-@media all and (max-width: 364px) {
-    .header-left {
-        display: block;
-    }
+@media all and (max-width: 650px) {
+  .game-container {
+      margin-left: 10%;
+      margin-right: 10%;
+  }
+}
 
-    #btn-start {
-        margin:0;
-    }
+@media all and (max-width: 500px) {
+  .game-container {
+      margin:0;
+      padding-left:1em;
+      padding-right:1em;
+      padding-bottom:1em;
+  }
+
+  .header {
+      display: block;
+  }
+
+  .header-left {
+      width:100%;
+  }
+
+  .header-right {
+      float: right;
+      margin-top:0;
+      margin-bottom:0.1em;
+  }
 }

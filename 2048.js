@@ -1,10 +1,11 @@
 var size = 4;
-var minValue = 2;
+var minValue = 256;
 var maxValue = 65536;
 var winValue = minValue * 1024;
 var odds2 = 0.9;
 var gameIsStarted = false;
 var emptyCells = []
+var score = 0;
 
 $(function(){
     initBoard();
@@ -12,6 +13,7 @@ $(function(){
 
 function initBoard() {
     $('#board').empty();
+    resetScore();
     for(let i = 0; i < size; i++){
 
         var row = document.createElement('div');
@@ -23,7 +25,6 @@ function initBoard() {
             if ($.inArray(norm(i) + norm(j), emptyCells) < 0) {
                 emptyCells.push(norm(i) + norm(j));
             }
-            console.log(emptyCells);
 
             var cell = document.createElement('div');
             cell.classList.add('game-cell');
@@ -50,7 +51,7 @@ function initBoard() {
 }
 
 function initEvents() {
-    $('#btn-size').off('click').click(e => {
+    $('#btn-resize').off('click').click(e => {
         e.preventDefault();
         oldSize = size;
         size = prompt('Entez la taille désirée (min : 2, max : 99)\nAttention! Toute progression sera perdue');
@@ -101,6 +102,7 @@ function initEvents() {
 }
 
 function startGame() {
+    resetScore();
     for (var i = 0; i < size; i++) {
         for (var j = 0; j < size; j++) {
             emptyCell(i,j);
@@ -118,7 +120,6 @@ function spanNum() {
     var cell = emptyCells[Math.floor(Math.random()*emptyCells.length)];
     var row = cell.substring(0,2);
     var col = cell.substring(2,4);
-    console.log("Trying to span num on cell : " + row + col);
     if ($('#num-'+row+''+col).html() == "")  {
         fillCell(row, col, (Math.random() * Math.floor(1)) < odds2 ? minValue : minValue*2);
         found = true;
@@ -129,8 +130,6 @@ function fillCell(row, col, value) {
     emptyCell(row,col);
     row = norm(row);
     col = norm(col);
-    console.log(row + col);
-    console.log(value);
     $('#num-'+row+''+col).html(value)
     var toRemove = emptyCells.indexOf(row+''+col);
     if (toRemove >= 0) {
@@ -157,7 +156,16 @@ function emptyCell(row, col) {
     }
     $('#num-'+row+''+col).removeClass('bg-other');
     adjustIndivFontSize(row,col);
-    $('#num-'+row+''+col).css("padding-top", "12%");
+    $('#num-'+row+''+col).css("padding-top", "17%");
+}
+
+function addScore(val) {
+    score += val;
+    $("#score").html(score);
+}
+
+function resetScore() {
+    $("#score").html("0");
 }
 
 /**
@@ -219,10 +227,10 @@ function adjustIndivFontSize(row, col) {
     var numLength = $("#num-"+norm(row)+''+norm(col)).html().length;
     if (numLength == 4) {
         fontSize = 3 * fontSize / 4; // 75%
-        $("#num-"+norm(row)+norm(col)).css("padding-top","20%");
+        $("#num-"+norm(row)+norm(col)).css("padding-top","25%");
     } else if (numLength == 5) {
         fontSize = 27 * fontSize / 40; // 90% of 75%
-        $("#num-"+norm(row)+norm(col)).css("padding-top","24%");
+        $("#num-"+norm(row)+norm(col)).css("padding-top","28%");
     }
     $("#cell-"+norm(row)+norm(col)).css("font-size", fontSize + "em");
 }
@@ -297,6 +305,7 @@ function movement(move) {
                     } else if ($('#num-'+rowToCheck+''+colToCheck).html() == $('#num-'+oldRow+''+oldCol).html() &&
                                 $.inArray(rowToCheck + '' + colToCheck, merged) == -1) {
                         newValue = Number($('#num-'+rowToCheck+''+colToCheck).html()) + Number($('#num-'+oldRow+''+oldCol).html());
+                        addScore(newValue);
                         merged.push(rowToCheck + '' + colToCheck);
                     } else {
                         merged.push(rowToCheck + '' + colToCheck);
