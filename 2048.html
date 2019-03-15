@@ -14,23 +14,32 @@
     </head>
 
     <body>
-            <div class="game-container">
-                <div class="header">
-                    <div class="header-left">
-                        <h1>2048</h1>
-                        <button id="btn-start" class="btn-warning">Nouvelle partie</button>
-                    </div>
-                    <div class="header-right">
-                        <div class="score">
-                            <h3 id="score">0</h3>
-                        </div>
-                        <button id="btn-resize" alt="Changer la taille">
-                            <img id="resize-icon" src="resize.svg">
-                        </button>
-                    </div>
+        <div class="game-container">
+            <div class="header">
+                <div class="header-left">
+                    <h1>2048</h1>
+                    <button id="btn-start" class="btn-warning">Nouvelle partie</button>
                 </div>
-                <div id="board" class="board"></div>
+                <div class="header-right">
+                    <div class="score">
+                        <h2 id="score">0</h2>
+                    </div>
+                    <button id="btn-resize" alt="Changer la taille">
+                        <img id="resize-icon" src="resize.svg">
+                    </button>
+                </div>
             </div>
-    </div>
+            <div id="board" class="board"></div>
+        </div>
+        <div id='success-message' class="end-message success">
+            <div class="end-text">
+                Réussi!
+            </div>
+        </div>
+        <div id='failure-message' class="end-message failure">
+            <div class="end-text">
+                Échec...
+            </div>
+        </div>
     </body>
 </html>

@@ -1,5 +1,5 @@
 var size = 4;
-var minValue = 256;
+var minValue = 2;
 var maxValue = 65536;
 var winValue = minValue * 1024;
 var odds2 = 0.9;
@@ -76,7 +76,7 @@ function initEvents() {
 
     $(document).off('keydown').keydown((e) => {
         e.preventDefault();
-        if (!gameIsStarted || gameOver()) {
+        if (!gameIsStarted) {
             return;
         }
 
@@ -84,6 +84,20 @@ function initEvents() {
         move = movement(e.which);
         if (move > 0) {
             spanNum();
+        }
+        var gameIsOver = gameOver();
+        if (gameIsOver == -1) {
+            // win
+            gameIsStarted = false;
+            $('#success-message').animate({
+                height: 'toggle'
+            }, 1000, function() {});
+        } else if (gameIsOver == 1) {
+            // lose
+            $('#failure-message').animate({
+                height: 'toggle'
+            }, 1000, function() {});
+            gameIsStarted = false;
         }
     });
 
@@ -99,10 +113,19 @@ function initEvents() {
             }, 250);
         });
     });
+
+    $('#success-message').click(function(){
+        $(this).fadeOut();
+    });
+
+    $('#failure-message').click(function(){
+        $(this).fadeOut();
+    });
 }
 
 function startGame() {
     resetScore();
+    emptyCells = []
     for (var i = 0; i < size; i++) {
         for (var j = 0; j < size; j++) {
             emptyCell(i,j);
@@ -159,8 +182,8 @@ function emptyCell(row, col) {
     $('#num-'+row+''+col).css("padding-top", "17%");
 }
 
-function addScore(val) {
-    score += val;
+function addScore() {
+    score += 1;
     $("#score").html(score);
 }
 
@@ -182,21 +205,18 @@ function gameOver() {
             right =  $('#num-'+norm(i)+''+norm(j+1)).html();
             up =  $('#num-'+norm(i-1)+''+norm(j)).html();
             down =  $('#num-'+norm(i+1)+''+norm(j)).html();
-            if (cell == left || cell == right || cell == up || cell == down) {
-                // board is full and there is no possible move
-                return 0;
-            }
             if (cell == winValue) {
                 // game is won
                 return -1;
             }
-            if (cell != "")  {
+            if (cell != "" &&
+                (cell != left && cell != right && cell != up && cell != down))  {
                 counter++;
             }
         }
     }
     if (size*size == counter) {
-        // all cells are filled
+        // no possible move
         return 1;
     }
     return 0;
@@ -305,7 +325,7 @@ function movement(move) {
                     } else if ($('#num-'+rowToCheck+''+colToCheck).html() == $('#num-'+oldRow+''+oldCol).html() &&
                                 $.inArray(rowToCheck + '' + colToCheck, merged) == -1) {
                         newValue = Number($('#num-'+rowToCheck+''+colToCheck).html()) + Number($('#num-'+oldRow+''+oldCol).html());
-                        addScore(newValue);
+                        addScore();
                         merged.push(rowToCheck + '' + colToCheck);
                     } else {
                         merged.push(rowToCheck + '' + colToCheck);
