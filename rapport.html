@@ -1,0 +1,61 @@
+<!--
+    Authors :
+    Olivier Hassaoui St-Amour (20078289)
+    Francis Boulet-Rouleau (20067884)
+/ -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <title>TP2 - Rapport</title>
+    </head>
+
+    <body>
+        <h1>Rapport TP2</h1>
+        <small>Olivier Hassaoui St-Amour (20078289) et Francis Boulet-Rouleau (20067884)</small>
+
+        <h2>Présentation</h2>
+            Nous avons décider de dévier un peu de la présentation proposer dans l'énoncé
+            du travail pour permettre une expérience utilisateur un peu plus complète.
+            L'utilisateur n'a pas besoin de recharger la page pour recommencer une nouvelle
+            partie et il peut changer la taille de la grille lui-même grâce aux boutons de
+            l'interface.
+            <br /><br />
+            Pour ce qui est de la police de caractère, nous avons opté
+            pour une police trouvé sur <i>Google Fonts</i> du nom de <i>Quicksand</i>.
+            <br /><br />
+            Le jeu est aussi jouable sur tous les grandeurs d'écran.
+        <h2>Apprentissages</h2>
+            Durant ce travail, nous avons compris plusieurs concepts importants du Web.
+            <br /><br />
+            D'abord, pour ce qui est du style, nous avons dû travailler fort pour faire
+            en sorte que le jeu soit bien présenté peu importe la grandeur de l'écran.
+            Nous avons tenté de contenir cette tâche uniquement dans le CSS, mais nous
+            avons parfois été obligé d'utiliser du Javascript pour ajuster le style.
+            <br /><br />
+            Par la suite, nous avons dû gérer les entrées claviers de l'utilisateur et
+            cela nous a causé quelques problèmes, car pour un seul clique de touche, plusieurs
+            évènements étaient déclanché, ce qui donnait un comportement innatendu au jeu.
+            Pour régler ce problème, il a fallu ajouter un appel à la fonction <code>off</code>
+            de jQuery, qui <i>unbind</i> l'évènement après son premier déclenchement.
+            <br /><br />
+            Finalement, nous avons aussi voulu rendre le jeu le plus personalisable possible.
+            Il est donc facile de changer plusieurs attributs du jeu, soit la fréquence d'apparition
+            d'un 2 (défaut : 90%), la valeur minimale d'une tuile (défaut : 2), la
+            valeur maximale (défaut : 65536) et la valeur de victoire (défaut : 1024 * valeur minimale).
+            Tous ces attributs sont facilement ajustables dans le Javascript avec des
+            variables globales.
+
+        <h2>Liens</h2>
+            <ul>
+                <li><a href="2048.html">2048.html</a></li>
+                <li><a href="2048.css">2048.css</a></li>
+                <li><a href="2048.js">2048.js</a></li>
+            </ul>
+    </body>
+</html>
