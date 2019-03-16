@@ -1,3 +1,9 @@
+/**
+ * Authors :
+ * Olivier Hassaoui St-Amour (20078289)
+ * Francis Boulet-Rouleau (20067884)
+ */
+
 var size = 4;
 var minValue = 2;
 var maxValue = 65536;
@@ -80,10 +86,11 @@ function initEvents() {
             return;
         }
 
-        var move; // boolean to know if something has been moved
-        move = movement(e.which);
-        if (move > 0) {
+        var nbMove;
+        nbMove = movement(e.which);
+        if (nbMove > 0) {
             spanNum();
+            addScore();
         }
         var gameIsOver = gameOver();
         if (gameIsOver == -1) {
@@ -149,6 +156,12 @@ function spanNum() {
     }
 }
 
+/**
+ * Replaces the content of the given cell by the given value
+ * @param  int row   row of the cell
+ * @param  int col   column of the cell
+ * @param  int value new value
+ */
 function fillCell(row, col, value) {
     emptyCell(row,col);
     row = norm(row);
@@ -167,6 +180,11 @@ function fillCell(row, col, value) {
     }
 }
 
+/**
+ * Empty the content of a cell
+ * @param  int row   row of the cell
+ * @param  int col   column of the cell
+ */
 function emptyCell(row, col) {
     row = norm(row);
     col = norm(col);
@@ -188,11 +206,12 @@ function addScore() {
 }
 
 function resetScore() {
+    score = 0;
     $("#score").html("0");
 }
 
 /**
- * [gameOver description]
+ * Check if the game is over
  * @return int -1 when game is won, 0 when game is lost, 1 otherwise
  */
 function gameOver() {
@@ -211,7 +230,8 @@ function gameOver() {
             }
             if (cell != "" &&
                 (cell != left && cell != right && cell != up && cell != down))  {
-                counter++;
+                    // cell is not empty and there is no possible move for it
+                    counter++;
             }
         }
     }
@@ -246,10 +266,10 @@ function adjustIndivFontSize(row, col) {
     }
     var numLength = $("#num-"+norm(row)+''+norm(col)).html().length;
     if (numLength == 4) {
-        fontSize = 3 * fontSize / 4; // 75%
+        fontSize = 3 * fontSize / 4; // 75% of default
         $("#num-"+norm(row)+norm(col)).css("padding-top","25%");
     } else if (numLength == 5) {
-        fontSize = 27 * fontSize / 40; // 90% of 75%
+        fontSize = 27 * fontSize / 40; // 90% of 75% of default
         $("#num-"+norm(row)+norm(col)).css("padding-top","28%");
     }
     $("#cell-"+norm(row)+norm(col)).css("font-size", fontSize + "em");
@@ -283,6 +303,12 @@ function norm(n){
 
 }
 
+/**
+ * This function tries to move every non-empty cell by one position over and over
+ * until it cannot move.
+ * @param  int move key value of up,down,right,left arrow (38,40,39.37)
+ * @return int      the number of move that happened in the turn (if one cell goes from position 03 to 00, it makes 3 moves)
+ */
 function movement(move) {
     if (move !== 37 && move !== 38 && move !== 39 && move !== 40) return;
 
@@ -316,19 +342,23 @@ function movement(move) {
                         colToCheck = norm(Number(col)-1);
                     break;
             }
-            if ($('#num-'+row+''+col).html() != "")  {
+            if ($('#num-'+row+col).html() != "")  {
                 oldRow = row;
                 oldCol = col;
                 while(true) {
-                    if ($('#num-'+rowToCheck+''+colToCheck).html() == "") {
-                        newValue = $('#num-'+oldRow+''+oldCol).html();
-                    } else if ($('#num-'+rowToCheck+''+colToCheck).html() == $('#num-'+oldRow+''+oldCol).html() &&
-                                $.inArray(rowToCheck + '' + colToCheck, merged) == -1) {
-                        newValue = Number($('#num-'+rowToCheck+''+colToCheck).html()) + Number($('#num-'+oldRow+''+oldCol).html());
-                        addScore();
-                        merged.push(rowToCheck + '' + colToCheck);
+                    if ($('#num-'+rowToCheck+colToCheck).html() == "") {
+                        // cell we are checking is empty
+                        newValue = $('#num-'+oldRow+oldCol).html();
+                    } else if ($('#num-'+rowToCheck+colToCheck).html() == $('#num-'+oldRow+oldCol).html() &&
+                                $.inArray(rowToCheck+colToCheck, merged) == -1) {
+                        // cell we are checking as the same number of the current cell AND
+                        // no other merge happened at that position during the current turn
+                        newValue = Number($('#num-'+rowToCheck+colToCheck).html()) + Number($('#num-'+oldRow+oldCol).html());
+                        merged.push(rowToCheck+colToCheck);
                     } else {
-                        merged.push(rowToCheck + '' + colToCheck);
+                        // if there is already a non-equal number at the checking position,
+                        // do as if a merge happened here
+                        merged.push(rowToCheck+colToCheck);
                         break;
                     }
                     fillCell(rowToCheck, colToCheck, newValue);
